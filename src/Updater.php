@@ -3,7 +3,6 @@
 namespace TinyApps\DbUpdater;
 
 use DirectoryIterator;
-use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -24,6 +23,7 @@ class Updater {
 	public const MODE_PHP = 2;
 
 	protected const PHP_CONFIG_VERSION = '1.0.0';
+	protected const JSON_CONFIG_VERSION = '1.0.0';
 
 	protected PDO $conn;
 	protected string $path;
@@ -67,7 +67,7 @@ class Updater {
 						array_filter(
 							array_map(
 								fn ($query) => trim($query),
-								explode(';', file_get_contents($fileInfo->getRealPath()))
+								explode(';', file_get_contents($fileInfo->getRealPath())),
 							),
 							fn ($query) => !empty($query),
 						),
@@ -91,19 +91,9 @@ class Updater {
 					throw new OutdatedConfigException('Your database config file is outdated. Please downgrade the Database Updater or update your config file.');
 				}
 
-				$uniqueKeys = [];
-
-				foreach ($config['updates'] as $update) {
-					if (isset($uniqueKeys[$update['id']])) {
-						throw new InvalidConfigException('Duplicate update ID found. Please make sure to use unique IDs for all updates.');
-					}
-
-					$uniqueKeys[$update['id']] = 1;
-				}
-
 				$this->updates = array_map(
 					fn ($update) => Update::fromConfigRow($update),
-					$config['updates']
+					$config['updates'],
 				);
 				break;
 
@@ -123,18 +113,8 @@ class Updater {
 					throw new ConfigReadException('Invalid JSON format.');
 				}
 
-				if (version_compare(self::PHP_CONFIG_VERSION, $config->config_version) === 1) {
+				if (version_compare(self::JSON_CONFIG_VERSION, $config->config_version) === 1) {
 					throw new OutdatedConfigException('Your database config file is outdated. Please downgrade the Database Updater or update your config file.');
-				}
-
-				$uniqueKeys = [];
-
-				foreach ($config->updates as $update) {
-					if (isset($uniqueKeys[$update->id])) {
-						throw new InvalidConfigException('Duplicate update ID found. Please make sure to use unique IDs for all updates.');
-					}
-
-					$uniqueKeys[$update->id] = 1;
 				}
 
 				$this->updates = array_map(
@@ -147,6 +127,7 @@ class Updater {
 				throw new InvalidArgumentException('Invalid mode');
 		}
 
+		$this->checkForDuplicateIds();
 		$this->setup();
 	}
 
@@ -158,15 +139,10 @@ class Updater {
 	 * @return Update[]
 	 */
 	public function outstandingUpdates(): array {
-		$outstanding = [];
-
-		foreach ($this->updates as $update) {
-			if (!$this->wasUpdateExecuted($update)) {
-				$outstanding[] = $update;
-			}
-		}
-
-		return $outstanding;
+		return array_filter(
+			$this->updates,
+			fn ($update) => !$this->wasUpdateExecuted($update),
+		);
 	}
 
 	/**
@@ -239,7 +215,7 @@ class Updater {
 	/**
 	 * Save a new update (according to selected mode)
 	 *
-	 * @param array $queries
+	 * @param string[] $queries
 	 * @param string|null $id
 	 *
 	 * @throws DuplicateIdException
@@ -384,6 +360,25 @@ class Updater {
 			$this->conn->query('SELECT 1 FROM `database_updates` LIMIT 1');
 		} catch (PDOException $e) {
 			Setup::createConfigTable($this->conn);
+		}
+	}
+
+	/**
+	 * Checks for duplicate update ID's
+	 *
+	 * @throws InvalidConfigException if duplicate ID found
+	 *
+	 * @return void
+	 */
+	protected function checkForDuplicateIds(): void {
+		$uniqueIds = [];
+
+		foreach ($this->updates as $update) {
+			if (isset($uniqueIds[$update->getId()])) {
+				throw new InvalidConfigException('Duplicate update ID found. Please make sure to use unique IDs for all updates.');
+			}
+
+			$uniqueIds[$update->getId()] = 1;
 		}
 	}
 }
