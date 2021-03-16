@@ -4,6 +4,13 @@ return [
 	'config_version' => '1.0.0',
 
 	'updates' => [
+		[
+            'id' => '2021-03-13-89084bc43c4d4dc3',
+            'queries' => [
+                'CREATE TABLE `test_table` (`id` serial, `test` varchar(255))',
+                'INSERT INTO `test_table` SET `test` = \'hello world\'',
+			],
+		],
 		// add updates above and keep this line
 		// always add a trailing comma to the update array
 	],
