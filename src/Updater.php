@@ -3,6 +3,7 @@
 namespace TinyApps\DbUpdater;
 
 use DirectoryIterator;
+use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -174,6 +175,10 @@ class Updater {
 			throw new UpdateFailureException($e);
 		}
 
+		if (empty($executed) && !$silent) {
+			echo 'No outstanding updates.' . PHP_EOL;
+		}
+
 		return $executed;
 	}
 
@@ -291,10 +296,10 @@ class Updater {
 	 * @return void
 	 */
 	protected function executeUpdate(Update $update): void {
-		$this->conn->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
-		$this->conn->beginTransaction();
-
 		try {
+			$this->conn->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+			$this->conn->beginTransaction();
+
 			foreach ($update->getQueries() as $query) {
 				$this->conn->exec($query);
 			}
@@ -302,8 +307,17 @@ class Updater {
 			$this->setUpdateAsExecuted($update);
 			$this->conn->commit();
 		} catch (PDOException $e) {
-			$this->conn->rollBack();
+			if ($this->conn->inTransaction()) {
+				$this->conn->rollBack();
+			}
+
 			throw new UpdateFailureException('Couldn\'t execute update with ID ' . $update->getId() . '. PDO Exception occured: ' . $e->getMessage());
+		} catch (Exception $e) {
+			if ($this->conn->inTransaction()) {
+				$this->conn->rollBack();
+			}
+
+			throw new UpdateFailureException('Couldn\'t execute update with ID ' . $update->getId() . '. Exception occured: ' . $e->getMessage());
 		}
 	}
 
