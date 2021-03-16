@@ -34,8 +34,8 @@ After following the installation instructions above, you’ll need to decide whi
 
 ### Save a new update
 There are two options for adding an update:
-	* Programmatically create an update by using  the `saveNewUpdate` method of the updater. (see example below)
-	* Manually create a file containing the update queries. The file name is used as the ID of the update and is inevitably unique in the directory mode. E.g. create a file `my-first-update.sql`  in your updates folder and put your queries in there (separated by a semicolon `;` ).
+* Programmatically create an update by using  the `saveNewUpdate` method of the updater. (see example below)
+* Manually create a file containing the update queries. The file name is used as the ID of the update and is inevitably unique in the directory mode. E.g. create a file `my-first-update.sql`  in your updates folder and put your queries in there (separated by a semicolon `;` ).
 
 ## Example Code
 
