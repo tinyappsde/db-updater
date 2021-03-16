@@ -11,7 +11,7 @@ class Setup {
 		try {
 			if ($conn->exec('
 			CREATE TABLE `database_updates` (
-				`id` bigint(20) unsigned,
+				`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				`update_id` varchar(255) NOT NULL,
 				`execution_date` datetime NOT NULL DEFAULT NOW(),
 				PRIMARY KEY (id),
