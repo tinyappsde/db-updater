@@ -161,6 +161,7 @@ class Updater {
 		try {
 			foreach ($this->outstandingUpdates() as $update) {
 				$this->executeUpdate($update);
+				$executed[] = $update;
 
 				if (!$silent) {
 					echo 'Update #' . $update->getId() . ' has been executed.' . PHP_EOL;
