@@ -298,23 +298,30 @@ class Updater {
 	 */
 	protected function executeUpdate(Update $update): void {
 		try {
-			$this->conn->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
-			$this->conn->beginTransaction();
+			$wasInTransaction = $this->conn->inTransaction();
+
+			if (!$wasInTransaction) {
+				$this->conn->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+				$this->conn->beginTransaction();
+			}
 
 			foreach ($update->getQueries() as $query) {
 				$this->conn->exec($query);
 			}
 
 			$this->setUpdateAsExecuted($update);
-			$this->conn->commit();
+
+			if (!$wasInTransaction) {
+				$this->conn->commit();
+			}
 		} catch (PDOException $e) {
-			if ($this->conn->inTransaction()) {
+			if (!$wasInTransaction && $this->conn->inTransaction()) {
 				$this->conn->rollBack();
 			}
 
 			throw new UpdateFailureException('Couldn\'t execute update with ID ' . $update->getId() . '. PDO Exception occured: ' . $e->getMessage());
 		} catch (Exception $e) {
-			if ($this->conn->inTransaction()) {
+			if (!$wasInTransaction && $this->conn->inTransaction()) {
 				$this->conn->rollBack();
 			}
 

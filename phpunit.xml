@@ -1,0 +1,14 @@
+<phpunit bootstrap="vendor/autoload.php">
+    <testsuites>
+        <testsuite name="Updater Unit Test">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="DB" value="example" />
+        <env name="DB_HOST" value="localhost" />
+        <env name="DB_USER" value="example" />
+        <env name="DB_PASS" value="example" />
+        <env name="DB_PORT" value="3306" />
+    </php>
+</phpunit>
