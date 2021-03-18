@@ -2,7 +2,6 @@
 	"name": "tinyapps/db-updater",
 	"description": "Simple PHP library for managing and executing database updates.",
 	"type": "library",
-	"version": "1.0.4",
 	"require": {
 		"php": "^7.4.0 || ^8.0"
 	},
