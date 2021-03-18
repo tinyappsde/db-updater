@@ -81,3 +81,15 @@ $updater->saveNewUpdate([
 	'ALTER TABLE ...',
 ]);
 ```
+
+## Unit Tests
+
+The library contains some unit tests for each mode. To execute them, set the following environment variables and execute `composer test`:
+
+* DB
+* DB_HOST
+* DB_USER
+* DB_PASS
+* DB_PORT
+
+You can also adjust the phpunit.xml and enter your database credentials there.
