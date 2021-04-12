@@ -78,10 +78,10 @@ class Updater {
 						),
 						array_filter(
 							array_map(
-								fn ($query) => trim($query),
+								function ($query) { return trim($query); },
 								explode(';', file_get_contents($fileInfo->getRealPath())),
 							),
-							fn ($query) => !empty($query),
+							function ($query) { return !empty($query); },
 						),
 					);
 				}
@@ -104,7 +104,7 @@ class Updater {
 				}
 
 				$this->updates = array_map(
-					fn ($update) => Update::fromConfigRow($update),
+					function ($update) { return Update::fromConfigRow($update); },
 					$config['updates'],
 				);
 				break;
@@ -130,7 +130,7 @@ class Updater {
 				}
 
 				$this->updates = array_map(
-					fn ($update) => Update::fromConfigRow($update),
+					function ($update) { return Update::fromConfigRow($update); },
 					$config->updates,
 				);
 				break;
@@ -153,7 +153,7 @@ class Updater {
 	public function outstandingUpdates(): array {
 		return array_filter(
 			$this->updates,
-			fn ($update) => !$this->wasUpdateExecuted($update),
+			function ($update) { return !$this->wasUpdateExecuted($update); },
 		);
 	}
 
