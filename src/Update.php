@@ -24,7 +24,7 @@ class Update {
 	 *
 	 * @return self
 	 */
-	public static function fromConfigRow(stdClass|array $row): self {
+	public static function fromConfigRow(mixed $row): self {
 		$row = (object) $row;
 
 		if (empty($row->id)) {
