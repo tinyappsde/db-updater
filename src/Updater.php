@@ -26,14 +26,25 @@ class Updater {
 	protected const PHP_CONFIG_VERSION = '1.0.0';
 	protected const JSON_CONFIG_VERSION = '1.0.0';
 
-	protected PDO $conn;
-	protected string $path;
-	protected int $mode;
+	/**
+	 * @var PDO
+	 */
+	protected $conn;
+
+	/**
+	 * @var string
+	 */
+	protected $path;
+
+	/**
+	 * @var int
+	 */
+	protected $mode;
 
 	/**
 	 * @var Update[]
 	 */
-	protected array $updates;
+	protected $updates;
 
 	/**
 	 * Initialize updater

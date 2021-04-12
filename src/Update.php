@@ -7,8 +7,15 @@ use TinyApps\DbUpdater\Exceptions\InvalidConfigException;
 
 class Update {
 
-	protected string $id;
-	protected array $queries;
+	/**
+	 * @var string
+	 */
+	protected $id;
+
+	/**
+	 * @var array
+	 */
+	protected $queries;
 
 	public function __construct(string $id, array $queries) {
 		$this->id = $id;
