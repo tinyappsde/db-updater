@@ -51,6 +51,8 @@ class Updater {
 		$this->path = $path;
 		$this->mode = $mode;
 
+		$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 		switch ($mode) {
 			case self::MODE_DIR:
 				$iterator = new DirectoryIterator($path);
