@@ -3,7 +3,7 @@
 	"description": "Simple PHP library for managing and executing database updates.",
 	"type": "library",
 	"require": {
-		"php": "^7.4.0 || ^8.0"
+		"php": "^7.3 || ^8.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.5"
