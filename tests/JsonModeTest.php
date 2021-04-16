@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use TinyApps\DbUpdater\Updater;
 
 final class JsonModeTest extends TestCase {
-	protected static ?PDO $db = null;
+	protected static $db = null;
 
 	public static function setUpBeforeClass(): void {
 		self::$db = new PDO(
