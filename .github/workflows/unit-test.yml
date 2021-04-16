@@ -23,6 +23,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - with:
+        php-version: ${{ matrix.php-versions }}
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
