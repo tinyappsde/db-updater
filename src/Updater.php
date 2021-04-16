@@ -256,7 +256,7 @@ class Updater {
 				file_put_contents(
 					$this->path . '/' . $id . '.sql',
 					implode("\n", array_map(
-						fn ($query) => strpos($query, ';') ? $query : $query . ';',
+						function ($query) { return strpos($query, ';') ? $query : $query . ';'; },
 						$queries,
 					)),
 				);
