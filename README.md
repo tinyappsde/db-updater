@@ -1,3 +1,5 @@
+[![Unit Tests](https://github.com/tinyappsde/db-updater/actions/workflows/unit-test.yml/badge.svg?branch=master)](https://github.com/tinyappsde/db-updater/actions/workflows/unit-test.yml)
+
 # Database Updater
 This is a simple PHP library for managing and executing database updates.
 It allows you to store database updates in a directory or a single config
