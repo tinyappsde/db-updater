@@ -87,6 +87,11 @@ class Updater {
 						),
 					);
 				}
+
+				usort(
+					$this->updates,
+					fn (Update $a, Update $b) => $a->getId() <=> $b->getId(),
+				);
 				break;
 
 			case self::MODE_PHP:
