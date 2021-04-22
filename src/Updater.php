@@ -90,7 +90,7 @@ class Updater {
 
 				usort(
 					$this->updates,
-					fn (Update $a, Update $b) => $a->getId() <=> $b->getId(),
+					function (Update $a, Update $b) { return $a->getId() <=> $b->getId(); },
 				);
 				break;
 
