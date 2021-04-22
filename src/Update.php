@@ -84,6 +84,6 @@ class Update {
 	}
 
 	public static function randomUniqueId(): string {
-		return date('Y-m-d-') . bin2hex(random_bytes(8));
+		return date('Y-m-d-His') . bin2hex(random_bytes(4));
 	}
 }
