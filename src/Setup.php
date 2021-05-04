@@ -7,10 +7,10 @@ use PDOException;
 use TinyApps\DbUpdater\Exceptions\TableSetupException;
 
 class Setup {
-	public static function createConfigTable(PDO $conn) {
+	public static function createConfigTable(PDO $conn, string $tableName = 'database_updates') {
 		try {
 			if ($conn->exec('
-			CREATE TABLE `database_updates` (
+			CREATE TABLE `' . $tableName . '` (
 				`id` int(11) NOT NULL AUTO_INCREMENT,
 				`update_id` varchar(255) NOT NULL,
 				`execution_date` datetime NOT NULL DEFAULT NOW(),

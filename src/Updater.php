@@ -29,6 +29,7 @@ class Updater {
 	protected PDO $conn;
 	protected string $path;
 	protected int $mode;
+	protected string $updatesTable;
 
 	/**
 	 * @var Update[]
@@ -40,16 +41,23 @@ class Updater {
 	 *
 	 * @param PDO $conn PDO database instance that is used for checking/executing updates
 	 * @param string $path path of the updates or the config file (in single file mode)
+	 * @param int $mode the mode used to store updates (Updater::MODE_DIR, ::MODE_JSON or ::MODE_PHP), defaults to MODE_DIR
+	 * @param string $updatesTable Optional custom table name used for storing what updates were executed (defaults to database_updates)
 	 *
 	 * @throws ConfigReadException
 	 * @throws OutdatedConfigException
 	 * @throws InvalidConfigException
 	 * @throws TableSetupException
 	 */
-	public function __construct(PDO $conn, string $path, int $mode = self::MODE_DIR) {
+	public function __construct(PDO $conn, string $path, int $mode = self::MODE_DIR, string $updatesTable = 'database_updates') {
 		$this->conn = $conn;
 		$this->path = $path;
 		$this->mode = $mode;
+		$this->updatesTable = $updatesTable;
+
+		if (!preg_match('/^[a-zA-Z_\-0-9]+$/', $updatesTable)) {
+			throw new InvalidArgumentException('Invalid table name.');
+		}
 
 		$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -59,7 +67,7 @@ class Updater {
 				$this->updates = [];
 
 				foreach ($iterator as $fileInfo) {
-					if ($fileInfo->isDir() || $fileInfo->isDot()) continue;
+					if ($fileInfo->isDir() || $fileInfo->isDot() || $fileInfo->getExtension() !== 'sql') continue;
 
 					$this->updates[] = new Update(
 						substr(
@@ -346,7 +354,7 @@ class Updater {
 	 * @return boolean
 	 */
 	protected function wasUpdateExecuted(Update $update): bool {
-		if (!$stmt = $this->conn->prepare('SELECT * FROM `database_updates` WHERE `update_id` = ?')) {
+		if (!$stmt = $this->conn->prepare('SELECT * FROM `' . $this->updatesTable . '` WHERE `update_id` = ?')) {
 			throw new TableSetupException('Please make sure your config table exists');
 		}
 
@@ -366,7 +374,7 @@ class Updater {
 	 * @return void
 	 */
 	protected function setUpdateAsExecuted(Update $update): void {
-		if (!$stmt = $this->conn->prepare('INSERT INTO `database_updates` SET `update_id` = ?, `execution_date` = NOW()')) {
+		if (!$stmt = $this->conn->prepare('INSERT INTO `' . $this->updatesTable . '` SET `update_id` = ?, `execution_date` = NOW()')) {
 			throw new TableSetupException('Please make sure your config table exists');
 		}
 
@@ -386,7 +394,7 @@ class Updater {
 	 */
 	protected function setup(): void {
 		try {
-			$this->conn->query('SELECT 1 FROM `database_updates` LIMIT 1');
+			$this->conn->query('SELECT 1 FROM `' . $this->updatesTable . '` LIMIT 1');
 		} catch (PDOException $e) {
 			Setup::createConfigTable($this->conn);
 		}
