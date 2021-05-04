@@ -63,6 +63,10 @@ class Updater {
 
 		switch ($mode) {
 			case self::MODE_DIR:
+				if (!is_dir($path) && !mkdir($path)) {
+					throw new ConfigReadException('Database updates directory is not existing and couldn\'t be created.');
+				}
+
 				$iterator = new DirectoryIterator($path);
 				$this->updates = [];
 
