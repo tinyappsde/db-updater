@@ -400,7 +400,7 @@ class Updater {
 		try {
 			$this->conn->query('SELECT 1 FROM `' . $this->updatesTable . '` LIMIT 1');
 		} catch (PDOException $e) {
-			Setup::createConfigTable($this->conn);
+			Setup::createConfigTable($this->conn, $this->updatesTable);
 		}
 	}
 
